@@ -6,7 +6,6 @@ worker_processes auto;
 error_log /var/log/nginx/error.log warn;
 pid /var/run/nginx.pid;
 
-
 events {
     worker_connections 1024;
     use epoll;
@@ -15,8 +14,8 @@ events {
 
 # HTTP Configuration
 http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
 
     # Logging Configuration
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
@@ -69,13 +68,64 @@ http {
     limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
     limit_req_zone $binary_remote_addr zone=general:10m rate=30r/s;
 
-    # Include upstream and security configurations
-    include /etc/nginx/upstream.conf;
-    include /etc/nginx/security.conf;
+    # Upstream Configuration
+    upstream homelab_http {
+        # Primary homelab server
+        server ${HOMELAB_IP}:80 max_fails=3 fail_timeout=30s;
+        
+        # Connection settings
+        keepalive 32;
+        keepalive_requests 100;
+        keepalive_timeout 60s;
+    }
+
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-Robots-Tag "noindex, nofollow" always;
+
+    # Rate limiting configuration
+    limit_req_status 429;
+    limit_conn_status 429;
 
     # Include site configurations
     include /etc/nginx/conf.d/*.conf;
 }
 
 # Stream Configuration for HTTPS Pass-through
-include /etc/nginx/stream.conf;
+stream {
+    # Logging for stream connections
+    error_log /var/log/nginx/stream_error.log warn;
+    access_log /var/log/nginx/stream_access.log;
+
+    # Upstream for HTTPS pass-through
+    upstream homelab_ssl {
+        server ${HOMELAB_IP}:443 max_fails=3 fail_timeout=30s;
+    }
+
+    # Map to detect SSL/TLS traffic
+    map $ssl_preread_server_name $backend_pool {
+        wielandtech.com homelab_ssl;
+        www.wielandtech.com homelab_ssl;
+        default homelab_ssl;
+    }
+
+    # HTTPS Pass-through Server
+    server {
+        listen 443;
+        proxy_pass $backend_pool;
+        
+        # SSL preread to get SNI
+        ssl_preread on;
+        
+        # Proxy settings
+        proxy_timeout 1s;
+        proxy_connect_timeout 1s;
+        proxy_responses 1;
+        
+        # Buffer settings
+        proxy_buffer_size 4k;
+    }
+}

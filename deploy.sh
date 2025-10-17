@@ -95,13 +95,9 @@ process_templates() {
         exit 1
     fi
     
-    # Replace variables in configuration files
-    for conf_file in nginx/upstream.conf nginx/stream.conf; do
-        if [[ -f "$SCRIPT_DIR/$conf_file" ]]; then
-            sed -i.bak "s/\${HOMELAB_IP}/$HOMELAB_IP/g" "$SCRIPT_DIR/$conf_file"
-            log "Processed $conf_file"
-        fi
-    done
+    # Note: NGINX will process templates automatically using envsubst
+    # The nginx:latest image automatically processes files in /etc/nginx/templates/
+    log "Environment variables will be processed by NGINX container automatically"
     
     success "Configuration templates processed"
 }
@@ -167,16 +163,9 @@ test_deployment() {
     docker-compose logs --tail=20
 }
 
-# Restore configuration backups
+# Restore configuration backups (no longer needed with template approach)
 restore_configs() {
-    log "Restoring configuration backups..."
-    
-    for conf_file in nginx/upstream.conf nginx/stream.conf; do
-        if [[ -f "$SCRIPT_DIR/$conf_file.bak" ]]; then
-            mv "$SCRIPT_DIR/$conf_file.bak" "$SCRIPT_DIR/$conf_file"
-            log "Restored $conf_file"
-        fi
-    done
+    log "No configuration backups to restore (using template approach)"
 }
 
 # Cleanup function
