@@ -42,9 +42,6 @@ server {
     # Let's Encrypt ACME challenge path
     # This MUST be forwarded to homelab for cert-manager to respond
     location /.well-known/acme-challenge/ {
-        # No rate limiting for ACME challenges
-        limit_req off;
-        
         # Forward to homelab where cert-manager will respond
         proxy_pass http://homelab_http;
         proxy_set_header Host $host;
