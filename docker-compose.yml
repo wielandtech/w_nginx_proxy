@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   nginx:
-    image: nginx:alpine
+    image: nginx:latest
     container_name: nginx-reverse-proxy
     restart: unless-stopped
     ports:
