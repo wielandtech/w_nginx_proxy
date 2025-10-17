@@ -1,0 +1,28 @@
+# HTTPS Pass-through Configuration
+upstream homelab_ssl {
+    server ${HOMELAB_IP}:443 max_fails=3 fail_timeout=30s;
+}
+
+# Map to detect SSL/TLS traffic
+map $ssl_preread_server_name $backend_pool {
+    wielandtech.com homelab_ssl;
+    www.wielandtech.com homelab_ssl;
+    default homelab_ssl;
+}
+
+# HTTPS Pass-through Server
+server {
+    listen 443;
+    proxy_pass $backend_pool;
+    
+    # SSL preread to get SNI
+    ssl_preread on;
+    
+    # Proxy settings
+    proxy_timeout 1s;
+    proxy_connect_timeout 1s;
+    proxy_responses 1;
+    
+    # Buffer settings
+    proxy_buffer_size 4k;
+}
