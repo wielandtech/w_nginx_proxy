@@ -11,6 +11,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/stream.d/https-passthrough.conf.template:/etc/nginx/templates/stream.d/https-passthrough.conf.template:ro
       - ./nginx/maintenance.html:/usr/share/nginx/html/maintenance.html:ro
       - ./logs:/var/log/nginx
     environment:

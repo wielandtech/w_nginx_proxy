@@ -1,19 +1,28 @@
 # NGINX Reverse Proxy for Homelab
 
-This Docker-based NGINX reverse proxy forwards traffic from `wielandtech.com` to your homelab Traefik instance, with SSL pass-through so Traefik handles all certificate management.
+This Docker-based NGINX reverse proxy forwards traffic from `wielandtech.com` to your homelab Kubernetes cluster, with **TLS termination happening in the cluster** using Traefik and cert-manager.
 
 ## 🏗️ Architecture
 
 ```
-Internet → VPS (NGINX) → Homelab (Traefik) → Website
-         Port 80/443    Port 80/443      Port 8000
+Internet → VPS (NGINX) → Homelab Router → Traefik LoadBalancer → Website Pod
+         HTTP/HTTPS      Port Forward      (TLS Termination)
 ```
 
-- **HTTP Traffic (Port 80)**: NGINX proxies to homelab Traefik with rate limiting and security headers
-- **HTTPS Traffic (Port 443)**: NGINX passes through TCP/TLS connections directly to Traefik
-- **SSL Certificates**: Managed entirely by Traefik in your homelab
-- **Load Balancing**: NGINX provides failover and connection pooling
-- **Fallback Page**: Serves branded "under construction" page when homelab is unavailable
+**Traffic Flow:**
+- **HTTP (Port 80)**: 
+  - `/.well-known/acme-challenge/` → Forwarded to homelab for Let's Encrypt verification
+  - Everything else → Redirected to HTTPS
+- **HTTPS (Port 443)**: TCP/TLS passthrough directly to homelab (encrypted end-to-end)
+- **TLS Certificates**: Managed by cert-manager in homelab cluster with Let's Encrypt
+- **Private Keys**: Stay secure in homelab, never touch the VPS
+
+**Key Benefits:**
+- ✅ End-to-end encryption (VPS never sees unencrypted traffic)
+- ✅ Certificates managed automatically by cert-manager
+- ✅ Private keys never leave your homelab
+- ✅ Simple VPS configuration (just a TCP proxy)
+- ✅ Automatic certificate renewal
 
 ## 📋 Prerequisites
 
@@ -23,9 +32,11 @@ Internet → VPS (NGINX) → Homelab (Traefik) → Website
    - Domain `wielandtech.com` DNS pointing to VPS IP
 
 2. **Homelab Requirements**:
-   - Traefik configured and running (192.168.70.240)
+   - Kubernetes cluster with Traefik and cert-manager
+   - Traefik LoadBalancer running (192.168.70.240)
    - Port forwarding: 80/443 → 192.168.70.240:80/443
-   - Website deployed and accessible via Traefik
+   - Website deployed with proper ingress configuration
+   - cert-manager ClusterIssuer configured for Let's Encrypt
 
 3. **Network Requirements**:
    - Homelab accessible from VPS (WAN IP or DDNS)
@@ -94,10 +105,9 @@ curl -H "Host: wielandtech.com" http://localhost/nginx-health
 ### NGINX Configuration
 
 - `nginx/nginx.conf` - Main NGINX configuration with stream module
-- `nginx/upstream.conf` - Backend server definitions
-- `nginx/stream.conf` - HTTPS pass-through configuration
-- `nginx/security.conf` - Security headers and rate limiting
-- `nginx/conf.d/wielandtech.conf` - HTTP site configuration
+- `nginx/default.conf.template` - HTTP configuration (ACME challenges & redirects)
+- `nginx/stream.d/https-passthrough.conf.template` - HTTPS TCP passthrough
+- `nginx/maintenance.html` - Fallback maintenance page
 
 ### Scripts
 
