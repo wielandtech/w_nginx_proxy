@@ -17,7 +17,7 @@ server {
     server_name wielandtech.com www.wielandtech.com;
     
     # Logging
-    access_log /var/log/nginx/wielandtech_access.log;
+    access_log /var/log/nginx/wielandtech_access.log main;
     error_log /var/log/nginx/wielandtech_error.log warn;
 
     # Client settings
