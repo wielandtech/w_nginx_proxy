@@ -43,7 +43,7 @@ check_prerequisites() {
     fi
     
     # Check if Docker Compose is installed
-    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+    if ! docker compose version &> /dev/null; then
         error "Docker Compose is not installed. Please install Docker Compose first."
         exit 1
     fi
@@ -109,13 +109,13 @@ deploy_stack() {
     cd "$SCRIPT_DIR"
     
     # Pull latest images
-    docker-compose pull
+    docker compose pull
     
     # Stop existing containers
-    docker-compose down --remove-orphans
+    docker compose down --remove-orphans
     
     # Start the stack
-    docker-compose up -d
+    docker compose up -d
     
     success "Stack deployed successfully"
 }
@@ -128,7 +128,7 @@ wait_for_health() {
     local attempt=1
     
     while [[ $attempt -le $max_attempts ]]; do
-        if docker-compose ps | grep -q "healthy\|Up"; then
+        if docker compose ps | grep -q "healthy\|Up"; then
             success "Services are healthy"
             return 0
         fi
@@ -139,7 +139,7 @@ wait_for_health() {
     done
     
     error "Services did not become healthy within expected time"
-    docker-compose logs
+    docker compose logs
     exit 1
 }
 
@@ -156,11 +156,11 @@ test_deployment() {
     
     # Show container status
     log "Container status:"
-    docker-compose ps
+    docker compose ps
     
     # Show recent logs
     log "Recent logs:"
-    docker-compose logs --tail=20
+    docker compose logs --tail=20
 }
 
 # Restore configuration backups (no longer needed with template approach)
