@@ -454,58 +454,109 @@ netstat -tulpn | grep :80
 netstat -tulpn | grep :443
 ```
 
-## 🔄 Migration Process
+## 🔄 Updates and Changes
 
-### Phase 1: Deploy and Test
+### Updating NGINX Configuration
 
-1. Deploy NGINX proxy on VPS
-2. Test with temporary subdomain or hosts file
-3. Verify both HTTP and HTTPS work
-4. Check health monitoring
+When making configuration changes:
 
-### Phase 2: DNS Cutover
+```bash
+# Edit configuration files
+nano nginx/default.conf.template  # or other config files
 
-1. Lower DNS TTL to 300 seconds (5 minutes)
-2. Update DNS A record to point to VPS IP
-3. Monitor for issues
-4. Verify SSL certificates work
+# Test configuration
+docker-compose exec nginx nginx -t
 
-### Phase 3: Cleanup
+# Restart to apply changes
+docker-compose restart nginx
 
-1. Remove old w_tech stack from VPS (if applicable)
-2. Set up monitoring and alerting
-3. Configure log rotation
-4. Document any customizations
+# Verify changes
+./health-check.sh check
+```
+
+### Updating Environment Variables
+
+```bash
+# Edit .env file
+nano .env
+
+# Recreate containers with new environment
+docker-compose down
+docker-compose up -d
+
+# Verify connectivity
+./health-check.sh check
+```
 
 ## 📝 Maintenance Tasks
 
 ### Regular Tasks
 
-- Monitor health check logs
-- Review access logs for anomalies
-- Update Docker images monthly
-- Check SSL certificate expiration
-- Verify homelab connectivity
+- **Monitor health**: Run `./health-check.sh check` regularly
+- **Review logs**: Check for anomalies or attack patterns
+- **Update images**: Update Docker images monthly
+- **Certificate monitoring**: cert-manager handles renewal automatically
+- **Homelab connectivity**: Ensure port forwarding is stable
+
+### Automated Monitoring (Optional)
+
+Set up a cron job for regular health checks:
+
+```bash
+# Add to crontab (every 5 minutes)
+crontab -e
+```
+
+Add this line:
+```bash
+*/5 * * * * /path/to/w_nginx_proxy/health-check.sh check >> /var/log/nginx-proxy-health.log 2>&1
+```
 
 ### Updates
 
 ```bash
 # Update NGINX image
-docker-compose pull
+docker-compose pull nginx
 docker-compose up -d
 
 # Update configuration
-# Edit config files, then:
+nano nginx/default.conf.template  # Edit as needed
 docker-compose exec nginx nginx -t
 docker-compose restart nginx
 ```
 
+### Log Rotation
+
+Set up logrotate to manage log files:
+
+```bash
+# Create logrotate config
+sudo nano /etc/logrotate.d/nginx-proxy
+```
+
+Add:
+```
+/path/to/w_nginx_proxy/logs/nginx/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    missingok
+    sharedscripts
+    postrotate
+        docker-compose -f /path/to/w_nginx_proxy/docker-compose.yml exec nginx nginx -s reload
+    endscript
+}
+```
+
 ## 🔗 Related Documentation
 
-- [Homelab Migration Guide](../w_homelab/MIGRATION_GUIDE.md)
-- [Reverse Proxy Setup Guide](../w_homelab/REVERSE_PROXY_SETUP.md)
+- [Homelab Repository](https://github.com/wielandtech/w_homelab) - Kubernetes cluster configuration
+- [Website Repository](https://github.com/wielandtech/w_tech) - Django application source
 - [NGINX Documentation](https://nginx.org/en/docs/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [Let's Encrypt Documentation](https://letsencrypt.org/docs/)
 
 ## 📞 Support
 
@@ -517,12 +568,47 @@ For issues or questions:
 4. Check homelab Traefik status
 5. Verify network configuration
 
-## 🎯 Next Steps
+## 🎯 Production Checklist
 
-After successful deployment:
+Ensure everything is properly configured:
 
-1. Set up monitoring alerts
-2. Configure log aggregation
-3. Implement backup strategy
-4. Consider CDN integration
-5. Plan for scaling if needed
+- [x] VPS deployed with NGINX reverse proxy
+- [x] DNS pointing to VPS IP (159.89.246.9)
+- [x] HTTPS working with Let's Encrypt certificates
+- [x] TLS termination in homelab cluster (Traefik + cert-manager)
+- [x] ACME challenges forwarding correctly
+- [ ] Health check cron job configured
+- [ ] Log rotation set up
+- [ ] Monitoring/alerting configured (optional)
+- [ ] Backup strategy for configuration files
+
+## 📈 Monitoring and Alerts
+
+Consider setting up:
+
+1. **Uptime Monitoring**: Use services like UptimeRobot or Healthchecks.io
+2. **Log Aggregation**: Forward logs to a centralized logging system
+3. **Alert Notifications**: Configure alerts for:
+   - Container downtime
+   - High error rates
+   - Certificate expiration (backup to cert-manager)
+   - Connectivity issues with homelab
+
+## 🔐 Security Best Practices
+
+Current security measures:
+
+- ✅ Rate limiting enabled (30 req/s general, 10 req/s API)
+- ✅ Security headers configured
+- ✅ Hidden server information
+- ✅ End-to-end encryption (TLS passthrough)
+- ✅ Automatic certificate renewal
+- ✅ Sensitive file access blocked
+
+**Additional recommendations:**
+
+1. **Firewall**: Ensure only ports 80 and 443 are open
+2. **SSH Hardening**: Use key-based auth, disable root login
+3. **Fail2ban**: Consider installing for brute-force protection
+4. **Updates**: Keep VPS OS and Docker up to date
+5. **Backups**: Regularly backup this configuration directory
