@@ -13,6 +13,12 @@ services:
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/stream.d/https-passthrough.conf.template:/etc/nginx/templates/stream.d/https-passthrough.conf.template:ro
       - ./nginx/maintenance.html:/usr/share/nginx/html/maintenance.html:ro
+      - ./nginx/400.html:/usr/share/nginx/html/400.html:ro
+      - ./nginx/403.html:/usr/share/nginx/html/403.html:ro
+      - ./nginx/404.html:/usr/share/nginx/html/404.html:ro
+      - ./nginx/500.html:/usr/share/nginx/html/500.html:ro
+      - ./nginx/502.html:/usr/share/nginx/html/502.html:ro
+      - ./nginx/503.html:/usr/share/nginx/html/503.html:ro
       - ./logs:/var/log/nginx
     environment:
       - HOMELAB_IP=${HOMELAB_IP}

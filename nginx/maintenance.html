@@ -1,255 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WielandTech - Under Maintenance</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 20px;
-            letter-spacing: -0.02em;
-        }
-
-        .status-icon {
-            font-size: 4rem;
-            margin-bottom: 30px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #2d3748;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #4a5568;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .message {
-            font-size: 1rem;
-            color: #718096;
-            margin-bottom: 40px;
-            line-height: 1.7;
-        }
-
-        .status-info {
-            background: #f7fafc;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin: 30px 0;
-            border-radius: 0 8px 8px 0;
-            text-align: left;
-        }
-
-        .status-info h3 {
-            color: #2d3748;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
-        .status-info p {
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .contact-info {
-            background: #edf2f7;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
-        }
-
-        .contact-info h3 {
-            color: #2d3748;
-            margin-bottom: 15px;
-        }
-
-        .contact-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .contact-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 16px;
-            border: 2px solid #667eea;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .contact-link:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            color: #718096;
-            font-size: 0.9rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 2px;
-            animation: progress 3s ease-in-out infinite;
-        }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 0%; }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 40px 20px;
-                margin: 10px;
-            }
-            
-            .logo {
-                font-size: 2rem;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
-            
-            .contact-links {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <title>Site Maintenance</title>
+  <style>
+    body {
+      text-align: center;
+      padding: 150px;
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      font-size: 50px;
+      margin-bottom: 30px;
+    }
+    p {
+      font-size: 20px;
+      color: #666;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">WielandTech</div>
-        
-        <div class="status-icon">🔧</div>
-        
-        <h1>Temporarily Under Maintenance</h1>
-        
-        <div class="subtitle">
-            We're performing some updates to improve your experience
-        </div>
-        
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-        
-        <div class="message">
-            Our website is currently undergoing scheduled maintenance to bring you new features and improvements. 
-            We expect to be back online shortly. Thank you for your patience!
-        </div>
-        
-        <div class="status-info">
-            <h3>🔍 What's happening?</h3>
-            <p>• System updates and security enhancements</p>
-            <p>• Performance optimizations</p>
-            <p>• New feature deployments</p>
-            <p>• Infrastructure improvements</p>
-        </div>
-        
-        <div class="contact-info">
-            <h3>Need immediate assistance?</h3>
-            <div class="contact-links">
-                <a href="mailto:contact@wielandtech.com" class="contact-link">📧 Email Us</a>
-                <a href="https://github.com/wielandtech" class="contact-link">🐙 GitHub</a>
-                <a href="https://linkedin.com/company/wielandtech" class="contact-link">💼 LinkedIn</a>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p>Expected resolution: Usually within 30 minutes</p>
-            <p>Last updated: <span id="timestamp"></span></p>
-            <p>&copy; 2024 WielandTech. All rights reserved.</p>
-        </div>
-    </div>
-
-    <script>
-        // Update timestamp
-        document.getElementById('timestamp').textContent = new Date().toLocaleString();
-        
-        // Auto-refresh every 5 minutes
-        setTimeout(() => {
-            window.location.reload();
-        }, 300000);
-        
-        // Add some interactivity
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.querySelector('.container');
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                container.style.transition = 'all 0.6s ease';
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
-            }, 100);
-        });
-    </script>
+  <h1>We'll be back soon!</h1>
+  <p>Sorry for the inconvenience. We're performing some maintenance at the moment. Please check back shortly.</p>
 </body>
 </html>
